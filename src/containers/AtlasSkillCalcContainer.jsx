@@ -6,10 +6,44 @@ import AtlasSkillNavBar from '../components/AtlasSkillNavBar';
 import AtlasSkillTitle from '../components/AtlasSkillTitle'
 import AtlasSkillCharacter from '../components/AtlasSkillCharacter';
 import AtlasSkillTreeTooltip from '../components/AtlasSkillTreeTooltip';
+import AtlasSaveModalContainer from './AtlasSaveModalContainer';
 import std from '../data/atlas/skillTreeData';
 import findTooltipCorner from '../utilities/findTooltipCorner';
 
 let canvas;
+
+const getInitialState = () => {
+  const skillsObj = {};
+  Object.keys(std).forEach(name => skillsObj[name] = {});
+
+  return {
+    buildName: 'New Build',
+    level: 1,
+    health: 0,
+    stamina: 0,
+    fortitude: 0,
+    weight: 0,
+    intelligence: 0,
+    maxSkillPoints: 0,
+    totalSpentPoints: 0,
+    spentPoints: {},
+    tab: 'character',
+    skills: skillsObj,
+    recipes: {},
+    bonuses: {},
+    feats: {},
+    skillPoints: 0,
+    unlock: {
+      'survivalism': true,
+      'quest': true
+    },
+    tooltipActive: false,
+    tooltipTarget: '',
+    tooltipCorner: '',
+    tooltipCoords: {},
+    saveModalOpen: false
+  }
+};
 
 class AtlasSkillCalcContainer extends Component {
   constructor() {
@@ -22,35 +56,24 @@ class AtlasSkillCalcContainer extends Component {
     this.changeTab = this.changeTab.bind(this);
     this.startLevelTimers = this.startLevelTimers.bind(this);
     this.clearLevelTimers = this.clearLevelTimers.bind(this);
+    this.toggleSaveModal = this.toggleSaveModal.bind(this);
+    this.loadBuildFromModal = this.loadBuildFromModal.bind(this);
+    this.renameBuildFromModal = this.renameBuildFromModal.bind(this);
+    this.reset = this.reset.bind(this);
+
+    if (localStorage.getItem('temp-tree')) {
+      console.log('test');
+      this.state = JSON.parse(localStorage.getItem('temp-tree'));
+      return;
+    }
 
     const skillsObj = {};
     Object.keys(std).forEach(name => skillsObj[name] = {});
 
-    this.state = {
-      level: 1,
-      health: 0,
-      stamina: 0,
-      fortitude: 0,
-      weight: 0,
-      intelligence: 0,
-      maxSkillPoints: 0,
-      totalSpentPoints: 0,
-      spentPoints: {},
-      tab: 'character',
-      skills: skillsObj,
-      recipes: {},
-      bonuses: {},
-      feats: {},
-      skillPoints: 0,
-      unlock: {
-        'survivalism': true,
-        'quest': true
-      },
-      tooltipActive: false,
-      tooltipTarget: '',
-      tooltipCorner: '',
-      tooltipCoords: {}
-    }
+    this.state = getInitialState();
+
+    const alteredState = Object.assign({}, this.state, { tab: 'character', saveModalOpen: false });
+    localStorage.setItem('temp-tree', JSON.stringify(alteredState));
   }
 
   componentDidMount() {
@@ -106,6 +129,11 @@ class AtlasSkillCalcContainer extends Component {
         object.setCoords();
       }
       canvas.requestRenderAll();
+    });
+
+    window.addEventListener('beforeunload', () => {
+      const alteredState = Object.assign({}, this.state, { tab: 'character', saveModalOpen: false });
+      localStorage.setItem('temp-tree', JSON.stringify(alteredState));
     });
   }
 
@@ -398,40 +426,62 @@ class AtlasSkillCalcContainer extends Component {
     });
   }
 
+  toggleSaveModal() {
+    this.setState({ saveModalOpen: !this.state.saveModalOpen });
+  }
+
+  loadBuildFromModal(build) {
+    this.setState(build);
+  }
+
+  renameBuildFromModal(name) {
+    this.setState({ buildName: name });
+  }
+
+  reset() {
+    const resetState = getInitialState();
+    localStorage.removeItem('loadedIndex');
+    this.setState({ ...resetState });
+  }
+
   render() {
     return (
       <div
         className="column"
       >
-      {
-        this.state.tooltipActive &&
-        <AtlasSkillTreeTooltip
-          skill={std[this.state.tab].skills[this.state.tooltipTarget]}
-          allotted={this.state.skills[this.state.tab]}
-          tooltipCorner={this.state.tooltipCorner}
-          tooltipCoords={this.state.tooltipCoords}
-        />
-      }
+        {
+          this.state.tooltipActive &&
+          <AtlasSkillTreeTooltip
+            skill={std[this.state.tab].skills[this.state.tooltipTarget]}
+            allotted={this.state.skills[this.state.tab]}
+            tooltipCorner={this.state.tooltipCorner}
+            tooltipCoords={this.state.tooltipCoords}
+          />
+        }
         <AtlasSkillNavBar
           skills={this.state.skills}
           changeTab={this.changeTab}
           unlock={this.state.unlock}
           spentPoints={this.state.spentPoints}
+          toggleSaveModal={this.toggleSaveModal}
+          saveModalOpen={this.state.saveModalOpen}
+          reset={this.reset}
+          buildName={this.state.buildName}
         />
         <AtlasSkillTitle
           title={this.state.tab === 'character' ? 'Character' : std[this.state.tab].display}
           total={this.state.maxSkillPoints}
           spent={this.state.totalSpentPoints}
         />
-      {
-        this.state.tab === 'character' &&
-        <AtlasSkillCharacter
-          getMaxSkillPoints={this.getMaxSkillPoints}
-          startLevelTimers={this.startLevelTimers}
-          clearLevelTimers={this.clearLevelTimers}
-          {...this.state}
-        />
-      }
+        {
+          this.state.tab === 'character' &&
+          <AtlasSkillCharacter
+            getMaxSkillPoints={this.getMaxSkillPoints}
+            startLevelTimers={this.startLevelTimers}
+            clearLevelTimers={this.clearLevelTimers}
+            {...this.state}
+          />
+        }
         <div
           className="min-width"
         >
@@ -440,6 +490,16 @@ class AtlasSkillCalcContainer extends Component {
           >
           </canvas>
         </div>
+        {
+          this.state.saveModalOpen &&
+          <AtlasSaveModalContainer
+            toggleSaveModal={this.toggleSaveModal}
+            loadBuildFromModal={this.loadBuildFromModal}
+            renameBuildFromModal={this.renameBuildFromModal}
+            reset={this.reset}
+            build={{...this.state}}
+          />
+        }
       </div>
     );
   }

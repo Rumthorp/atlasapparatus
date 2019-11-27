@@ -19,6 +19,7 @@ import Skill_HarvestBoost_Icon from '../../assets/atlas/icons/quest/Skill_Harves
 export default {
   dimension: [3, 3, 3, 3],
   icon: Star,
+  display: 'Quests',
   skills: {
     'Rejuvenated Level 1': {
       icon: Skill_RejuvenatedLevel1_Icon,

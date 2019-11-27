@@ -87,7 +87,7 @@
 
   &__nav {
     &__wrapper {
-      margin: 5px 0vh 5px 0vh;
+      margin: 5px auto 5px auto;
     }
 
     &__icon {
@@ -133,5 +133,63 @@
     &__data {
       margin-left: 10px;
     }
+  }
+
+  &__save {
+    &__modal-wrapper {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      height: 100%;
+      width: 100%;
+      display: flex;
+    }
+
+    &__modal {
+      margin: auto;
+      background-color: black;
+      border: 5px solid white;
+      color: $lightest-aqua;
+      display: flex;
+      flex-direction: column;
+      min-height: 800px;
+      max-height: 800px;
+      min-width: 700px;
+      max-width: 700px;
+    }
+
+    &__button {
+      font-size: 18px;
+      padding: 5px 10px;
+      background-color: white;
+      color: black;
+      margin: 5px 10px;
+      &:disabled {
+        background-color: $red;
+      }
+    }
+
+    &__builds-wrapper {
+      overflow: auto;
+    }
+
+    &__build-wrapper {
+      border: 3px solid transparent;
+    }
+
+    &__build-selected {
+      border: 3px solid $green;
+    }
+
+    &__build-loaded {
+      color: $green;
+    }
+
+    &__build {
+      font-size: 25px;
+      padding: 0px;
+      margin: 5px 0px;
+    }
+
   }
 }
