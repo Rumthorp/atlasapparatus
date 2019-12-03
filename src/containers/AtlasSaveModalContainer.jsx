@@ -102,6 +102,7 @@ class AtlasSaveModalContainer extends Component {
   }
 
   loadBuild() {
+    if (this.props.build.tab !== 'character') document.getElementsByClassName('canvas-container')[0].classList.add('hidden');
     this.props.loadBuildFromModal(this.state.builds[this.state.selectedIndex]);
     localStorage.setItem('loadedIndex', String(this.state.selectedIndex));
   }

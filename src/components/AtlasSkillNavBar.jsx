@@ -43,27 +43,33 @@ const AtlasSkillNavBar = (props) => {
       className="row"
     >
       <div
-        className="row absolute"
-      >
-        <button
-          onClick={toggleSaveModal}
-        >
-          Save/Load Build
-        </button>
-        <button
-          onClick={reset}
-        >
-          Reset
-        </button>
-        <p
-          className="green"
-        >
-          {buildName}
-        </p>
-      </div>
-      <div
         className="asc__nav__wrapper asc__width row center"
       >
+        <div
+          className="relative"
+        >
+          <div
+            className="asc__nav__save-wrapper row"
+          >
+            <button
+              onClick={reset}
+              className="asc__nav__save-button"
+            >
+              Reset
+            </button>
+            <p
+              className="asc__nav__build-name green"
+            >
+              {buildName}
+            </p>
+            <button
+              onClick={toggleSaveModal}
+              className="asc__nav__save-button"
+            >
+              Save/Load Build
+            </button>
+          </div>
+        </div>
         <button
           className='asc__nav__button asc__nav__button-enabled'
           onClick={() => changeTab('character')}

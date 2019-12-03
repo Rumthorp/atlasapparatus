@@ -439,6 +439,7 @@ class AtlasSkillCalcContainer extends Component {
   }
 
   reset() {
+    if (this.state.tab !== 'character') document.getElementsByClassName('canvas-container')[0].classList.add('hidden');
     const resetState = getInitialState();
     localStorage.removeItem('loadedIndex');
     this.setState({ ...resetState });

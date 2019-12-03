@@ -70,14 +70,17 @@
     display: flex;
     justify-content: center;
 
-    &__inner {
+    &__points {
+      transform: translateX(-500px);
+      width: 500px;
       display: flex;
       justify-content: center;
-      flex: 1;
     }
 
-    &__points {
-      justify-content: flex-end;
+    &__tab {
+      display: flex;
+      justify-content: center;
+      width: 500px;
     }
 
     &__seperator {
@@ -113,6 +116,29 @@
 
     &__button-enabled {
       background-color: black;
+    }
+
+    &__build-name {
+      font-size: 30px;
+      margin: 0px;
+      overflow-x: auto;
+    }
+
+    &__save-wrapper {
+      position: absolute;
+      transform: translateX(-475px) translateY(-50%);
+      width: 475px;
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    &__save-button {
+      font-size: 18px;
+      padding: 5px 10px;
+      background-color: white;
+      color: black;
     }
   }
 
